@@ -4,9 +4,10 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions, renderers, viewsets, mixins
 
-from .models import Sezione, CentroDiRaccolta, Sesso, StatoDonatore
-from .serializers import (SezioneSerializer, UserSerializer,
-                          CentroDiRaccoltaSerializer, SessoSerializer, StatoDonatoreSerializer)
+from .models import (Sezione, CentroDiRaccolta, Sesso,
+                     StatoDonatore, TipoDonazione)
+from .serializers import (SezioneSerializer, UserSerializer, CentroDiRaccoltaSerializer,
+                          SessoSerializer, StatoDonatoreSerializer, TipoDonazioneSerializer)
 
 
 @api_view(['GET'])
@@ -59,4 +60,10 @@ class SessiViewSet(viewsets.ReadOnlyModelViewSet):
 class StatiDonatoreViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = StatoDonatore.objects.all()
     serializer_class = StatoDonatoreSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+
+class TipiDonazioneViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = TipoDonazione.objects.all()
+    serializer_class = TipoDonazioneSerializer
     permission_classes = (permissions.IsAuthenticated,)
