@@ -4,9 +4,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework import permissions, renderers, viewsets, mixins
 
-from .models import Sezione, CentroDiRaccolta
+from .models import Sezione, CentroDiRaccolta, Sesso
 from .serializers import (
-    SezioneSerializer, UserSerializer, CentroDiRaccoltaSerializer)
+    SezioneSerializer, UserSerializer, CentroDiRaccoltaSerializer, SessoSerializer)
 
 
 @api_view(['GET'])
@@ -48,3 +48,9 @@ class CentriDiRaccoltaViewSet(viewsets.ModelViewSet):
         # if self.request.user.is_superuser:
         #     return CentroDiRaccolta.objects.all()
         return CentroDiRaccolta.objects.filter(owner=self.request.user)
+
+
+class SessiViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Sesso.objects.all()
+    serializer_class = SessoSerializer
+    permission_classes = (permissions.IsAuthenticated,)
