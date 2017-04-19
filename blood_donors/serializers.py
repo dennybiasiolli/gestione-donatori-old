@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import Sezione
+from .models import Sezione, CentroDiRaccolta
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -17,4 +17,12 @@ class SezioneSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
         model = Sezione
+        fields = ('__all__')
+
+
+class CentroDiRaccoltaSerializer(serializers.HyperlinkedModelSerializer):
+    owner = UserSerializer()
+
+    class Meta:
+        model = CentroDiRaccolta
         fields = ('__all__')
