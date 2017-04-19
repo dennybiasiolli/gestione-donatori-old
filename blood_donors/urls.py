@@ -2,7 +2,8 @@ from django.conf.urls import url, include
 from rest_framework.routers import DefaultRouter
 from rest_framework.authtoken import views
 
-from .views import SezioniViewSet, UsersViewSet, CentriDiRaccoltaViewSet
+from .views import (SezioniViewSet, UsersViewSet,
+                    CentriDiRaccoltaViewSet, SessiViewSet)
 
 
 # Create a router and register our viewsets with it.
@@ -10,6 +11,7 @@ router = DefaultRouter()
 router.register(r'users', UsersViewSet)
 router.register(r'sezioni', SezioniViewSet)
 router.register(r'centridiraccolta', CentriDiRaccoltaViewSet)
+router.register(r'sessi', SessiViewSet)
 
 # The API URLs are now determined automatically by the router.
 # Additionally, we include the login URLs for the browsable API.
