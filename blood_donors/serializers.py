@@ -73,3 +73,13 @@ class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
             owner=user)
         self.fields['centro_raccolta_default'].queryset = CentroDiRaccolta.objects.filter(
             owner=user)
+
+    def validate_sezione(self, value):
+        if value.owner != self.context['request'].user:
+            raise serializers.ValidationError('Sezione non esistente')
+        return value
+
+    def validate_centro_raccolta_default(self, value):
+        if value and value.owner != self.context['request'].user:
+            raise serializers.ValidationError('Centro di raccolta non esistente')
+        return value
