@@ -2,7 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from .models import (Sezione, CentroDiRaccolta, Sesso,
-                     StatoDonatore, TipoDonazione)
+                     StatoDonatore, TipoDonazione, Donatore)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -48,3 +48,28 @@ class TipoDonazioneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = TipoDonazione
         fields = ('__all__')
+
+
+class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Donatore
+        fields = ('url', 'id', 'sezione', 'num_tessera', 'num_tessera_cartacea',
+                  'data_rilascio_tessera', 'cognome', 'nome', 'codice_fiscale',
+                  'sesso', 'data_nascita', 'data_iscrizione', 'stato_donatore',
+                  'gruppo_sanguigno', 'rh', 'fenotipo', 'kell', 'indirizzo',
+                  'frazione', 'cap', 'citta', 'provincia', 'tel', 'tel_lavoro',
+                  'cell', 'fax', 'email', 'fermo_per_malattia',
+                  'donazioni_pregresse', 'num_benemerenze',
+                  'centro_raccolta_default',)
+
+    def __init__(self, *args, **kwargs):
+        # Make sure that self.fields is populated
+        super().__init__(*args, **kwargs)
+
+        # Filtering related querysets to current user
+        user = self.context['request'].user
+        self.fields['sezione'].queryset = Sezione.objects.filter(
+            owner=user)
+        self.fields['centro_raccolta_default'].queryset = CentroDiRaccolta.objects.filter(
+            owner=user)
