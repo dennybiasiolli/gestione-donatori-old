@@ -5,9 +5,10 @@ from rest_framework.reverse import reverse
 from rest_framework import permissions, renderers, viewsets, mixins
 
 from .models import (Sezione, CentroDiRaccolta, Sesso,
-                     StatoDonatore, TipoDonazione)
+                     StatoDonatore, TipoDonazione, Donatore)
 from .serializers import (SezioneSerializer, UserSerializer, CentroDiRaccoltaSerializer,
-                          SessoSerializer, StatoDonatoreSerializer, TipoDonazioneSerializer)
+                          SessoSerializer, StatoDonatoreSerializer, TipoDonazioneSerializer,
+                          DonatoreSerializer)
 
 
 @api_view(['GET'])
@@ -67,3 +68,14 @@ class TipiDonazioneViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = TipoDonazione.objects.all()
     serializer_class = TipoDonazioneSerializer
     permission_classes = (permissions.IsAuthenticated,)
+
+
+class DonatoriViewSet(viewsets.ModelViewSet):
+    queryset = Donatore.objects.all()
+    serializer_class = DonatoreSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        # if self.request.user.is_superuser:
+        #     return Donatore.objects.all()
+        return Donatore.objects.filter(sezione__owner=self.request.user)
