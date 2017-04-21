@@ -1,7 +1,8 @@
 from django.contrib import admin
 
 from .models import (
-    Sezione, CentroDiRaccolta, Sesso, StatoDonatore, TipoDonazione, Donatore
+    Sezione, CentroDiRaccolta, Sesso, StatoDonatore, TipoDonazione, Donatore,
+    Donazione
 )
 
 
@@ -43,9 +44,20 @@ class DonatoreAdmin(admin.ModelAdmin):
             # kwargs['queryset'] = Sezione.objects.filter(owner=request.user)
         return super(DonatoreAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
+
+class DonazioneAdmin(admin.ModelAdmin):
+
+    def formfield_for_foreignkey(self, db_field, request, **kwargs):
+        if db_field.name == 'donatore':
+            # if not request.user.is_superuser:
+            kwargs['queryset'] = Donatore.objects.filter(sezione__owner=request.user)
+        return super(DonazioneAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
+
+
 admin.site.register(Sezione, SezioneAdmin)
 admin.site.register(CentroDiRaccolta, CentroDiRaccoltaAdmin)
 admin.site.register(Sesso)
 admin.site.register(StatoDonatore, StatoDonatoreAdmin)
 admin.site.register(TipoDonazione)
 admin.site.register(Donatore, DonatoreAdmin)
+admin.site.register(Donazione, DonazioneAdmin)
