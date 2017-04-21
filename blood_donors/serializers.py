@@ -14,19 +14,33 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SezioneSerializer(serializers.HyperlinkedModelSerializer):
-    owner = UserSerializer()
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Sezione
         fields = ('__all__')
 
 
+class SezioneChildSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Sezione
+        fields = ('url', 'id', 'descrizione')
+
+
 class CentroDiRaccoltaSerializer(serializers.HyperlinkedModelSerializer):
-    owner = UserSerializer()
+    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = CentroDiRaccolta
         fields = ('__all__')
+
+
+class CentroDiRaccoltaChildSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = CentroDiRaccolta
+        fields = ('url', 'id', 'descrizione')
 
 
 class SessoSerializer(serializers.HyperlinkedModelSerializer):
@@ -34,6 +48,13 @@ class SessoSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Sesso
         fields = ('__all__')
+
+
+class SessoChildSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = Sesso
+        fields = ('url', 'id', 'descrizione')
 
 
 class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
@@ -51,17 +72,44 @@ class TipoDonazioneSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
+    # sezione = SezioneChildSerializer(read_only=False,
+    #     style={'base_template': 'select.html'}
+    # )
+    sezione_id = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        queryset=Sezione.objects.all(),
+        source='sezione')
+    sezione = SezioneChildSerializer(read_only=True)
+    sesso_id = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        queryset=Sesso.objects.all(),
+        source='sesso')
+    sesso = SessoChildSerializer(read_only=True)
+    stato_donatore_id = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        queryset=StatoDonatore.objects.all(),
+        source='stato_donatore')
+    stato_donatore = StatoDonatoreSerializer(read_only=True)
+    centro_raccolta_default_id = serializers.PrimaryKeyRelatedField(
+        read_only=False,
+        queryset=CentroDiRaccolta.objects.all(),
+        source='centro_raccolta_default',
+        allow_null=True)
+    centro_raccolta_default = CentroDiRaccoltaChildSerializer(
+        read_only=True)
 
     class Meta:
         model = Donatore
-        fields = ('url', 'id', 'sezione', 'num_tessera', 'num_tessera_cartacea',
-                  'data_rilascio_tessera', 'cognome', 'nome', 'codice_fiscale',
-                  'sesso', 'data_nascita', 'data_iscrizione', 'stato_donatore',
+        fields = ('url', 'id', 'sezione_id', 'sezione', 'num_tessera',
+                  'num_tessera_cartacea', 'data_rilascio_tessera', 'cognome',
+                  'nome', 'codice_fiscale', 'sesso_id', 'sesso', 'data_nascita',
+                  'data_iscrizione', 'stato_donatore_id', 'stato_donatore',
                   'gruppo_sanguigno', 'rh', 'fenotipo', 'kell', 'indirizzo',
                   'frazione', 'cap', 'citta', 'provincia', 'tel', 'tel_lavoro',
                   'cell', 'fax', 'email', 'fermo_per_malattia',
                   'donazioni_pregresse', 'num_benemerenze',
-                  'centro_raccolta_default',)
+                  'centro_raccolta_default_id', 'centro_raccolta_default',)
+        depth = 1
 
     def __init__(self, *args, **kwargs):
         # Make sure that self.fields is populated
@@ -69,9 +117,9 @@ class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
 
         # Filtering related querysets to current user
         user = self.context['request'].user
-        self.fields['sezione'].queryset = Sezione.objects.filter(
+        self.fields['sezione_id'].queryset = Sezione.objects.filter(
             owner=user)
-        self.fields['centro_raccolta_default'].queryset = CentroDiRaccolta.objects.filter(
+        self.fields['centro_raccolta_default_id'].queryset = CentroDiRaccolta.objects.filter(
             owner=user)
 
     def validate_sezione(self, value):
@@ -81,5 +129,6 @@ class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
 
     def validate_centro_raccolta_default(self, value):
         if value and value.owner != self.context['request'].user:
-            raise serializers.ValidationError('Centro di raccolta non esistente')
+            raise serializers.ValidationError(
+                'Centro di raccolta non esistente')
         return value
