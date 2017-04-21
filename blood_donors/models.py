@@ -120,3 +120,16 @@ class Donatore(models.Model):
 
     def __str__(self):
         return self.num_tessera.upper() + ' ' + self.cognome.upper() + ' ' + self.nome.upper()
+
+
+class Donazione(models.Model):
+    donatore = models.ForeignKey('Donatore')
+    data = models.DateField()
+    tipo_donazione = models.ForeignKey('TipoDonazione')
+    centro_di_raccolta = models.ForeignKey('CentroDiRaccolta', blank=True, null=True)
+
+    class Meta:
+        verbose_name_plural = "Donazioni"
+
+    def __str__(self):
+        return self.donatore + ' - ' + self.data + ' - ' + self.tipo_donazione
