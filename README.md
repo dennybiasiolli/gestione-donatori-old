@@ -1,5 +1,8 @@
 # Bload Donors Management API server
 
+[![Updates](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/shield.svg)](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/) [![Python 3](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/python-3-shield.svg)](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/)
+
+
 #### Initialize
 Python 3 required
 ```
