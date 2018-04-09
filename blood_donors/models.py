@@ -3,7 +3,7 @@ from django.db import models
 
 
 class Sezione(models.Model):
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     descrizione = models.CharField(max_length=255)
     indirizzo = models.CharField(max_length=255, blank=True)
     frazione = models.CharField(max_length=255, blank=True)
@@ -23,7 +23,7 @@ class Sezione(models.Model):
 
 
 class CentroDiRaccolta(models.Model):
-    owner = models.ForeignKey('auth.User')
+    owner = models.ForeignKey('auth.User', on_delete=models.CASCADE)
     descrizione = models.CharField(max_length=255)
     indirizzo = models.CharField(max_length=255, blank=True)
     frazione = models.CharField(max_length=255, blank=True)
@@ -84,17 +84,18 @@ class TipoDonazione(models.Model):
 
 
 class Donatore(models.Model):
-    sezione = models.ForeignKey('Sezione')
+    sezione = models.ForeignKey('Sezione', on_delete=models.CASCADE)
     num_tessera = models.CharField(max_length=255)
     num_tessera_cartacea = models.CharField(max_length=255, blank=True)
     data_rilascio_tessera = models.DateField(null=True, blank=True)
     cognome = models.CharField(max_length=255)
     nome = models.CharField(max_length=255)
     codice_fiscale = models.CharField(max_length=255, blank=True)
-    sesso = models.ForeignKey('Sesso')
+    sesso = models.ForeignKey('Sesso', on_delete=models.CASCADE)
     data_nascita = models.DateField(null=True, blank=True)
     data_iscrizione = models.DateField(null=True, blank=True)
-    stato_donatore = models.ForeignKey('StatoDonatore')
+    stato_donatore = models.ForeignKey(
+        'StatoDonatore', on_delete=models.CASCADE)
     gruppo_sanguigno = models.CharField(max_length=10)
     rh = models.CharField(max_length=10)
     fenotipo = models.CharField(max_length=10, blank=True)
@@ -112,7 +113,8 @@ class Donatore(models.Model):
     fermo_per_malattia = models.BooleanField(default=False)
     donazioni_pregresse = models.IntegerField(default=0)
     num_benemerenze = models.IntegerField(default=0)
-    centro_raccolta_default = models.ForeignKey('CentroDiRaccolta', blank=True, null=True)
+    centro_raccolta_default = models.ForeignKey(
+        'CentroDiRaccolta', blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Donatori"
@@ -123,10 +125,12 @@ class Donatore(models.Model):
 
 
 class Donazione(models.Model):
-    donatore = models.ForeignKey('Donatore')
+    donatore = models.ForeignKey('Donatore', on_delete=models.CASCADE)
     data = models.DateField()
-    tipo_donazione = models.ForeignKey('TipoDonazione')
-    centro_di_raccolta = models.ForeignKey('CentroDiRaccolta', blank=True, null=True)
+    tipo_donazione = models.ForeignKey(
+        'TipoDonazione', on_delete=models.CASCADE)
+    centro_di_raccolta = models.ForeignKey(
+        'CentroDiRaccolta', blank=True, null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "Donazioni"
