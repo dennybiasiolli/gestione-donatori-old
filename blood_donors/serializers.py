@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import serializers
 
 from .models import (Sezione, CentroDiRaccolta, Sesso,
@@ -119,6 +120,8 @@ class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
         user = self.context['request'].user
         self.fields['sezione_id'].queryset = Sezione.objects.filter(
             owner=user)
+        self.fields['stato_donatore_id'].queryset = StatoDonatore.objects.filter(
+            Q(owner=user) | Q(owner=None))
         self.fields['centro_raccolta_default_id'].queryset = CentroDiRaccolta.objects.filter(
             owner=user)
 

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.db.models import Q
 
 from .models import (
     Sezione, CentroDiRaccolta, Sesso, StatoDonatore, TipoDonazione, Donatore,
@@ -42,6 +43,13 @@ class DonatoreAdmin(admin.ModelAdmin):
                 if kwargs['queryset'].count() == 1:
                     kwargs['initial'] = kwargs['queryset'].first()
             # kwargs['queryset'] = Sezione.objects.filter(owner=request.user)
+        if db_field.name == 'stato_donatore':
+            # if not request.user.is_superuser:
+                kwargs['queryset'] = StatoDonatore.objects.filter(
+                    Q(owner=request.user) | Q(owner=None))
+                if kwargs['queryset'].count() == 1:
+                    kwargs['initial'] = kwargs['queryset'].first()
+            # kwargs['queryset'] = StatoDonatore.objects.filter(owner=request.user)
         return super(DonatoreAdmin, self).formfield_for_foreignkey(db_field, request, **kwargs)
 
 
