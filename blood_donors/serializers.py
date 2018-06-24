@@ -15,11 +15,11 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class SezioneSerializer(serializers.HyperlinkedModelSerializer):
-    owner = UserSerializer(read_only=True)
 
     class Meta:
         model = Sezione
-        fields = ('__all__')
+        fields = ('url', 'id', 'descrizione', 'indirizzo', 'frazione',
+                  'cap', 'citta', 'provincia', 'tel', 'fax', 'email', )
 
 
 class SezioneChildSerializer(serializers.HyperlinkedModelSerializer):
