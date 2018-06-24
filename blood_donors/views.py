@@ -33,8 +33,6 @@ class SezioniViewSet(viewsets.ModelViewSet):
         serializer.save(owner=self.request.user)
 
     def get_queryset(self):
-        # if self.request.user.is_superuser:
-        #     return Sezione.objects.all()
         return Sezione.objects.filter(owner=self.request.user)
 
 
