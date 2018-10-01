@@ -65,6 +65,8 @@ class StatoDonatore(models.Model):
     descrizione = models.CharField(unique=True, max_length=255)
     descrizione_estesa = models.CharField(unique=True, max_length=255)
     is_attivo = models.BooleanField(default=True)
+    owner = models.ForeignKey('auth.User', blank=True,
+                              null=True, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = "StatiDonatore"
