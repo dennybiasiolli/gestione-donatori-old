@@ -6,7 +6,7 @@
 #### Initialize
 Python 3 required
 ```
-pip install -r requirements.txt
+pip install -r requirements_dev.txt
 python manage.py migrate
 ```
 
