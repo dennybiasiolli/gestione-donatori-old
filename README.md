@@ -1,21 +1,36 @@
-# Blood Donors Management API server
+# Gestione Donatori - API Server
 
 [![Updates](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/shield.svg)](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/) [![Python 3](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/python-3-shield.svg)](https://pyup.io/repos/github/dennybiasiolli/blood-donor-management/)
 
 
-#### Initialize
-Python 3 required
-```
-pip install -r requirements_dev.txt
-python manage.py migrate
-```
+## Initializing project
 
-#### Create superuser
-```
-python manage.py createsuperuser
-```
+- Install requirements or development requirements, based on your preferences.
 
-#### Run server
-```
-python manage.py runserver
-```
+    ```sh
+    pip install -r requirements.txt
+    # or
+    pip install -r requirements_dev.txt
+    ```
+
+- Create settings file, for example starting from development settings
+
+    `cp website/settings_dev.py website/settings.py`
+
+- Define a `SECRET_KEY` in `website/settings.py` file
+
+
+## Running server
+
+- Apply all missing database migration
+
+    `python manage.py migrate`
+
+- Collecting all static files
+    (for production purposes only, non required in development mode)
+
+    `python manage.py collectstatic --noinput`
+
+- Running server
+
+    `python manage.py runserver`
