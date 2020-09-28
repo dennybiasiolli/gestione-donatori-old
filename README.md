@@ -34,3 +34,7 @@
 - Running server
 
     `python manage.py runserver`
+
+- Configure a cron job for flushing expired tokens daily
+
+    `python manage.py flushexpiredtokens`
