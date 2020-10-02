@@ -11,8 +11,6 @@ class ProfiloUtenteAdmin(admin.ModelAdmin):
     list_display = ('utente', 'is_sezione', 'is_centro_di_raccolta',
                     'is_donatore',)
 
-    def has_delete_permission(self, request, obj=None):
-        return False
 
 
 class ProfiloUtenteInline(admin.StackedInline):
