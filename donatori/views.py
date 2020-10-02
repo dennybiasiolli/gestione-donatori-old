@@ -2,7 +2,11 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework import mixins, permissions, viewsets, response
 
-from .serializers import UserSerializer
+from .models import Sezione
+from .serializers import (
+    SezioneSerializer,
+    UserSerializer,
+)
 
 
 class CurrentUserViewSet(mixins.ListModelMixin,
@@ -15,3 +19,15 @@ class CurrentUserViewSet(mixins.ListModelMixin,
         return response.Response(
             self.get_serializer(request.user).data
         )
+
+
+class SezioneViewSet(mixins.RetrieveModelMixin,
+                     mixins.UpdateModelMixin,
+                     mixins.ListModelMixin,
+                     viewsets.GenericViewSet):
+    queryset = Sezione.objects.all()
+    serializer_class = SezioneSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(utente=self.request.user)
