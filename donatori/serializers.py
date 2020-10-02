@@ -1,18 +1,18 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from .models import ProfiloUtente
+from .models import Sezione
 
 
-class ProfiloUtenteSerializer(serializers.HyperlinkedModelSerializer):
+class SezioneSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = ProfiloUtente
-        fields = ('is_sezione', 'is_centro_di_raccolta', 'is_donatore',)
+        model = Sezione
+        fields = ('descrizione',)
 
 
 class UserSerializer(serializers.HyperlinkedModelSerializer):
-    profiloutente = ProfiloUtenteSerializer()
+    sezione = SezioneSerializer()
 
     class Meta:
         model = User
-        fields = ('id', 'email', 'profiloutente')
+        fields = ('id', 'email', 'sezione',)

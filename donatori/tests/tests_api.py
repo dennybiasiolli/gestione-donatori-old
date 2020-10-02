@@ -9,11 +9,16 @@ class CurrentUserViewSetTestCase(MockedTestCase):
         response = self.client.get('/api/me/')
         self.assertEqual(response.status_code, 200)
         self.assertDictContainsSubset({
-            'id': 1,
             'email': 'avis1@email.it',
-            'profiloutente': {
-                'is_sezione': False,
-                'is_centro_di_raccolta': False,
-                'is_donatore': False,
+            'sezione': None,
+        }, response.data)
+
+        self.client.force_login(self.avis2)
+        response = self.client.get('/api/me/')
+        self.assertEqual(response.status_code, 200)
+        self.assertDictContainsSubset({
+            'email': 'avis2@email.it',
+            'sezione': {
+                'descrizione': 'AVIS 2',
             },
         }, response.data)
