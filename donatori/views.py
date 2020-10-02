@@ -7,7 +7,7 @@ from .serializers import UserSerializer
 
 class CurrentUserViewSet(mixins.ListModelMixin,
                          viewsets.GenericViewSet):
-    queryset = User.objects.all().select_related('profiloutente')
+    queryset = User.objects.all().select_related('profiloutente', 'sezione')
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
