@@ -38,3 +38,13 @@
 - Configure a cron job for flushing expired tokens daily
 
     `python manage.py flushexpiredtokens`
+
+
+## Tests
+
+Launch simple tests with `python manage.py test`, or launch test with coverage
+results with:
+
+```
+coverage run manage.py test --settings=website.settings_test && coverage report -m && coverage html
+```
