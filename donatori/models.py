@@ -49,3 +49,63 @@ class Sezione(models.Model):
 
     def __str__(self):
         return self.descrizione
+
+
+class StatoDonatore(models.Model):
+    utente = models.ForeignKey(User, blank=True, null=True,
+                               on_delete=models.CASCADE)
+    descrizione = models.CharField(max_length=255, unique=True)
+    is_attivo = models.BooleanField(default=True)
+    codice = models.CharField(max_length=255, blank=True)
+
+    class Meta:
+        verbose_name = 'Stato donatore'
+        verbose_name_plural = 'Stati donatore'
+
+    def __str__(self):
+        return self.descrizione_estesa
+
+
+class Donatore(models.Model):
+    MAN = 'M'
+    WOMAN = 'F'
+    SEX_CHOICES = (
+        (MAN, 'Maschio'),
+        (WOMAN, 'Femmina'),
+    )
+    sezione = models.ForeignKey('Sezione', on_delete=models.CASCADE)
+    num_tessera = models.CharField(max_length=255)
+    cognome = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255)
+    sesso = models.CharField(max_length=2, choices=SEX_CHOICES)
+    stato_donatore = models.ForeignKey(StatoDonatore, on_delete=models.CASCADE)
+    num_tessera_cartacea = models.CharField(max_length=255, blank=True)
+    data_rilascio_tessera = models.DateField(null=True, blank=True)
+    codice_fiscale = models.CharField(max_length=255, blank=True)
+    data_nascita = models.DateField(null=True, blank=True)
+    data_iscrizione = models.DateField(null=True, blank=True)
+    gruppo_sanguigno = models.CharField(max_length=10)
+    rh = models.CharField(max_length=10)
+    fenotipo = models.CharField(max_length=10, blank=True)
+    kell = models.CharField(max_length=10, blank=True)
+    indirizzo = models.CharField(max_length=255, blank=True)
+    frazione = models.CharField(max_length=255, blank=True)
+    cap = models.CharField(max_length=10, blank=True)
+    citta = models.CharField(max_length=255, blank=True)
+    provincia = models.CharField(max_length=100, blank=True)
+    tel = models.CharField(max_length=255, blank=True)
+    tel_lavoro = models.CharField(max_length=255, blank=True)
+    cell = models.CharField(max_length=255, blank=True)
+    fax = models.CharField(max_length=255, blank=True)
+    email = models.CharField(max_length=255, blank=True)
+    fermo_per_malattia = models.BooleanField(default=False)
+    donazioni_pregresse = models.IntegerField(default=0)
+    num_benemerenze = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = 'Donatore'
+        verbose_name_plural = 'Donatori'
+        unique_together = ('sezione', 'num_tessera',)
+
+    def __str__(self):
+        return self.num_tessera.upper() + ' ' + self.cognome.upper() + ' ' + self.nome.upper()
