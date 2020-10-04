@@ -4,7 +4,13 @@ from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.html import format_html
 
-from .models import ProfiloUtente, Sezione
+from .models import (
+    Donatore,
+    ProfiloUtente,
+    Sesso,
+    Sezione,
+    StatoDonatore,
+)
 
 
 class ProfiloUtenteAdmin(admin.ModelAdmin):
@@ -43,3 +49,6 @@ class CustomUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Sezione)
+admin.site.register(Sesso)
+admin.site.register(StatoDonatore)
+admin.site.register(Donatore)
