@@ -2,8 +2,13 @@ from django.contrib.auth.models import User
 from django.shortcuts import render
 from rest_framework import mixins, permissions, viewsets, response
 
-from .models import Sezione
+from .models import (
+    Sesso,
+    Sezione,
+)
 from .serializers import (
+    SessoDetailSerializer,
+    SessoSerializer,
     SezioneSerializer,
     UserSerializer,
 )
@@ -31,3 +36,16 @@ class SezioneViewSet(mixins.RetrieveModelMixin,
 
     def get_queryset(self):
         return self.queryset.filter(utente=self.request.user)
+
+
+class SessoViewSet(mixins.RetrieveModelMixin,
+                   mixins.ListModelMixin,
+                   viewsets.GenericViewSet):
+    queryset = Sesso.objects.all()
+    serializer_class = SessoSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return SessoSerializer
+        return SessoDetailSerializer
