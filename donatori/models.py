@@ -51,41 +51,57 @@ class Sezione(models.Model):
         return self.descrizione
 
 
+class Sesso(models.Model):
+    codice = models.CharField(max_length=1, unique=True)
+    descrizione = models.CharField(max_length=255)
+    gg_da_sangue_a_sangue = models.IntegerField()
+    gg_da_sangue_a_plasma = models.IntegerField()
+    gg_da_sangue_a_piastrine = models.IntegerField()
+    gg_da_plasma_a_sangue = models.IntegerField()
+    gg_da_plasma_a_plasma = models.IntegerField()
+    gg_da_plasma_a_piastrine = models.IntegerField()
+    gg_da_piastrine_a_sangue = models.IntegerField()
+    gg_da_piastrine_a_plasma = models.IntegerField()
+    gg_da_piastrine_a_piastrine = models.IntegerField()
+
+    class Meta:
+        verbose_name = 'Sesso'
+        verbose_name_plural = 'Sessi'
+
+    def __str__(self):
+        return self.descrizione
+
+
 class StatoDonatore(models.Model):
     utente = models.ForeignKey(User, blank=True, null=True,
                                on_delete=models.CASCADE)
-    descrizione = models.CharField(max_length=255, unique=True)
+    codice = models.CharField(max_length=255)
+    descrizione = models.CharField(max_length=255, blank=True)
     is_attivo = models.BooleanField(default=True)
-    codice = models.CharField(max_length=255, blank=True)
 
     class Meta:
         verbose_name = 'Stato donatore'
         verbose_name_plural = 'Stati donatore'
+        unique_together = ('utente', 'codice',)
 
     def __str__(self):
-        return self.descrizione_estesa
+        return self.descrizione
 
 
 class Donatore(models.Model):
-    MAN = 'M'
-    WOMAN = 'F'
-    SEX_CHOICES = (
-        (MAN, 'Maschio'),
-        (WOMAN, 'Femmina'),
-    )
-    sezione = models.ForeignKey('Sezione', on_delete=models.CASCADE)
+    sezione = models.ForeignKey(Sezione, on_delete=models.CASCADE)
     num_tessera = models.CharField(max_length=255)
     cognome = models.CharField(max_length=255)
     nome = models.CharField(max_length=255)
-    sesso = models.CharField(max_length=2, choices=SEX_CHOICES)
+    sesso = models.ForeignKey(Sesso, on_delete=models.CASCADE)
     stato_donatore = models.ForeignKey(StatoDonatore, on_delete=models.CASCADE)
     num_tessera_cartacea = models.CharField(max_length=255, blank=True)
     data_rilascio_tessera = models.DateField(null=True, blank=True)
     codice_fiscale = models.CharField(max_length=255, blank=True)
     data_nascita = models.DateField(null=True, blank=True)
     data_iscrizione = models.DateField(null=True, blank=True)
-    gruppo_sanguigno = models.CharField(max_length=10)
-    rh = models.CharField(max_length=10)
+    gruppo_sanguigno = models.CharField(max_length=10, blank=True)
+    rh = models.CharField(max_length=10, blank=True)
     fenotipo = models.CharField(max_length=10, blank=True)
     kell = models.CharField(max_length=10, blank=True)
     indirizzo = models.CharField(max_length=255, blank=True)
@@ -108,4 +124,4 @@ class Donatore(models.Model):
         unique_together = ('sezione', 'num_tessera',)
 
     def __str__(self):
-        return self.num_tessera.upper() + ' ' + self.cognome.upper() + ' ' + self.nome.upper()
+        return '{} - {} {}'.format(self.num_tessera, self.cognome, self.nome)
