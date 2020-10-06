@@ -5,6 +5,7 @@ from .views import (
     CurrentUserViewSet,
     SessoViewSet,
     SezioneViewSet,
+    StatoDonatoreViewSet,
 )
 
 
@@ -12,6 +13,7 @@ router = DefaultRouter()
 router.register(r'me', CurrentUserViewSet)
 router.register(r'sezioni', SezioneViewSet)
 router.register(r'sessi', SessoViewSet)
+router.register(r'stati-donatore', StatoDonatoreViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),

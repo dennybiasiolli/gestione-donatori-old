@@ -1,15 +1,18 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.shortcuts import render
 from rest_framework import mixins, permissions, viewsets, response
 
 from .models import (
     Sesso,
     Sezione,
+    StatoDonatore,
 )
 from .serializers import (
     SessoDetailSerializer,
     SessoSerializer,
     SezioneSerializer,
+    StatoDonatoreSerializer,
     UserSerializer,
 )
 
@@ -49,3 +52,21 @@ class SessoViewSet(mixins.RetrieveModelMixin,
         if self.action == 'list':
             return SessoSerializer
         return SessoDetailSerializer
+
+
+class StatoDonatoreViewSet(viewsets.ModelViewSet):
+    queryset = StatoDonatore.objects.all()
+    serializer_class = StatoDonatoreSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        if self.action in ('list', 'retrieve'):
+            return self.queryset.filter(
+                Q(utente__isnull=True) | Q(utente=self.request.user)
+            )
+        return self.queryset.filter(
+            utente=self.request.user
+        )
+
+    def perform_create(self, serializer):
+        serializer.save(utente=self.request.user)

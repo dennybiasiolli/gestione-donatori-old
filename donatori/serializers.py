@@ -1,9 +1,12 @@
 from django.contrib.auth.models import User
+from django.db.models import Q
 from rest_framework import serializers
+from rest_framework.validators import UniqueTogetherValidator
 
 from .models import (
     Sesso,
     Sezione,
+    StatoDonatore,
 )
 
 
@@ -52,3 +55,16 @@ class SessoDetailSerializer(serializers.HyperlinkedModelSerializer):
                   'gg_da_piastrine_a_plasma',
                   'gg_da_piastrine_a_piastrine',
                   )
+
+
+class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
+    utente = serializers.PrimaryKeyRelatedField(
+        read_only=True,
+        default=serializers.CurrentUserDefault(),
+    )
+    is_attivo = serializers.BooleanField(default=True)
+
+    class Meta:
+        model = StatoDonatore
+        fields = ('id', 'codice', 'descrizione', 'is_attivo',
+                  'utente')
