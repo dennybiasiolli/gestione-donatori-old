@@ -187,3 +187,123 @@ class SessoViewSetTestCase(MockedTestCase):
         id = response.data[0]['id']
         response = self.client.delete('/api/sessi/{}/'.format(id))
         self.assertEqual(response.status_code, 405)
+
+
+class StatoDonatoreViewSetTestCase(MockedTestCase):
+    def test_get_stati_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.get('/api/stati-donatore/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 2)
+        self.assertListEqual(response.data, [
+            {
+                'id': 1,
+                'codice': 'Attivo',
+                'descrizione': 'Attivo',
+                'is_attivo': True,
+                'utente': None,
+            },
+            {
+                'id': 2,
+                'codice': 'Inattivo',
+                'descrizione': 'Inattivo',
+                'is_attivo': False,
+                'utente': None,
+            },
+        ])
+
+        self.client.force_login(self.avis2)
+        response = self.client.get('/api/stati-donatore/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.data), 4)
+
+    def test_get_stato_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.get(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.get(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.data, {
+            'id': self.stato_c1.id,
+            'codice': 'C1',
+            'descrizione': 'Custom 1',
+            'is_attivo': True,
+            'utente': self.avis2.id,
+        })
+
+    def test_post_stato_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.post('/api/stati-donatore/', {
+            'codice': 'C1',
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertDictContainsSubset({
+            'codice': 'C1',
+            'descrizione': '',
+            'is_attivo': True,
+            'utente': self.avis1.id,
+        }, response.data)
+
+        response = self.client.post('/api/stati-donatore/', {
+            'codice': 'C1',
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_put_stato_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.put(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.put(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id), {
+                'codice': 'C1 new',
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.data, {
+            'id': self.stato_c1.id,
+            'codice': 'C1 new',
+            'descrizione': 'Custom 1',
+            'is_attivo': True,
+            'utente': self.avis2.id,
+        })
+
+    def test_patch_stato_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.patch(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.patch(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id), {
+                'descrizione': 'ciao',
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.data, {
+            'id': self.stato_c1.id,
+            'codice': 'C1',
+            'descrizione': 'ciao',
+            'is_attivo': True,
+            'utente': self.avis2.id,
+        })
+
+    def test_delete_stato_donatore(self):
+        self.client.force_login(self.avis1)
+        response = self.client.delete('/api/stati-donatore/1/')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.delete(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.delete('/api/stati-donatore/1/')
+        self.assertEqual(response.status_code, 404)
+        response = self.client.delete(
+            '/api/stati-donatore/{}/'.format(self.stato_c1.id))
+        self.assertEqual(response.status_code, 204)

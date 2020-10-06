@@ -2,7 +2,10 @@ from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
-from donatori.models import Sezione
+from donatori.models import (
+    Sezione,
+    StatoDonatore,
+)
 
 
 class MockedTestCase(TestCase):
@@ -18,6 +21,18 @@ class MockedTestCase(TestCase):
             descrizione='AVIS 2',
             ragione_sociale='AVIS ABC',
             indirizzo='Via Roma 12',
+        )
+        self.stato_c1 = StatoDonatore.objects.create(
+            utente=self.avis2,
+            codice='C1',
+            descrizione='Custom 1',
+            is_attivo=True,
+        )
+        self.stato_c2 = StatoDonatore.objects.create(
+            utente=self.avis2,
+            codice='C2',
+            descrizione='Custom 2',
+            is_attivo=False,
         )
 
     def authenticate(self, username, password):
