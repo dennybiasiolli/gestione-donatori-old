@@ -4,11 +4,14 @@ from django.shortcuts import render
 from rest_framework import mixins, permissions, viewsets, response
 
 from .models import (
+    Donatore,
     Sesso,
     Sezione,
     StatoDonatore,
 )
 from .serializers import (
+    DonatoreDetailSerializer,
+    DonatoreSerializer,
     SessoDetailSerializer,
     SessoSerializer,
     SezioneSerializer,
@@ -70,3 +73,20 @@ class StatoDonatoreViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(utente=self.request.user)
+
+
+class DonatoreViewSet(viewsets.ModelViewSet):
+    queryset = Donatore.objects.all().select_related(
+        'sezione', 'sesso', 'stato_donatore')
+    serializer_class = DonatoreSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            sezione__utente=self.request.user
+        )
+
+    def get_serializer_class(self):
+        if self.action == 'list':
+            return DonatoreSerializer
+        return DonatoreDetailSerializer

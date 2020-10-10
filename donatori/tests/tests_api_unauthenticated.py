@@ -17,3 +17,7 @@ class APIUnauthenticatedTestCase(TestCase):
     def test_get_stati_donatore(self):
         response = self.client.get('/api/stati-donatore/')
         self.assertEqual(response.status_code, 403)
+
+    def test_get_donatori(self):
+        response = self.client.get('/api/donatori/')
+        self.assertEqual(response.status_code, 403)
