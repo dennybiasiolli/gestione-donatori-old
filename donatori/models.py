@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from datetime import date
 
 
 class ProfiloUtente(models.Model):
@@ -125,3 +126,29 @@ class Donatore(models.Model):
 
     def __str__(self):
         return '{} - {} {}'.format(self.num_tessera, self.cognome, self.nome)
+
+
+class Donazione(models.Model):
+    SANGUE_INTERO = 1
+    PLASMA = 2
+    PIASTRINE = 3
+    TIPO_DONAZIONE_CHOICES = [
+        (SANGUE_INTERO, 'Sangue intero'),
+        (PLASMA, 'Plasma'),
+        (PIASTRINE, 'Piastrine'),
+    ]
+    donatore = models.ForeignKey(Donatore, on_delete=models.CASCADE)
+    tipo_donazione = models.IntegerField(
+        choices=TIPO_DONAZIONE_CHOICES,
+        default=SANGUE_INTERO,
+    )
+    data_donazione = models.DateField(default=date.today)
+
+    class Meta:
+        verbose_name = 'Donazione'
+        verbose_name_plural = 'Donazioni'
+        unique_together = ('donatore', 'data_donazione',)
+
+    def __str__(self):
+        return '{} - {} {}'.format(
+            self.data_donazione, self.donatore.cognome, self.donatore.nome)
