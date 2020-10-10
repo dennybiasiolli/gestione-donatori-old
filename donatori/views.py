@@ -10,7 +10,7 @@ from .models import (
     StatoDonatore,
 )
 from .serializers import (
-    DonatoreDetailSerializer,
+    DonatoreListSerializer,
     DonatoreSerializer,
     SessoDetailSerializer,
     SessoSerializer,
@@ -78,7 +78,7 @@ class StatoDonatoreViewSet(viewsets.ModelViewSet):
 class DonatoreViewSet(viewsets.ModelViewSet):
     queryset = Donatore.objects.all().select_related(
         'sezione', 'sesso', 'stato_donatore')
-    serializer_class = DonatoreSerializer
+    serializer_class = DonatoreListSerializer
     permission_classes = (permissions.IsAuthenticated,)
 
     def get_queryset(self):
@@ -88,5 +88,5 @@ class DonatoreViewSet(viewsets.ModelViewSet):
 
     def get_serializer_class(self):
         if self.action == 'list':
-            return DonatoreSerializer
-        return DonatoreDetailSerializer
+            return DonatoreListSerializer
+        return DonatoreSerializer
