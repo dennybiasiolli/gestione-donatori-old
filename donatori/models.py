@@ -90,7 +90,8 @@ class StatoDonatore(models.Model):
 
 
 class Donatore(models.Model):
-    sezione = models.ForeignKey(Sezione, on_delete=models.CASCADE)
+    sezione = models.ForeignKey(
+        Sezione, related_name='donatori', on_delete=models.CASCADE)
     num_tessera = models.CharField(max_length=255)
     cognome = models.CharField(max_length=255)
     nome = models.CharField(max_length=255)
@@ -137,7 +138,8 @@ class Donazione(models.Model):
         (PLASMA, 'Plasma'),
         (PIASTRINE, 'Piastrine'),
     ]
-    donatore = models.ForeignKey(Donatore, on_delete=models.CASCADE)
+    donatore = models.ForeignKey(
+        Donatore, related_name='donazioni', on_delete=models.CASCADE)
     tipo_donazione = models.IntegerField(
         choices=TIPO_DONAZIONE_CHOICES,
         default=SANGUE_INTERO,
