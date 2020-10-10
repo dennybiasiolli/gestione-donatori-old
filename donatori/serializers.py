@@ -71,7 +71,7 @@ class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
                   'utente')
 
 
-class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
+class DonatoreListSerializer(serializers.HyperlinkedModelSerializer):
     sezione_id = serializers.PrimaryKeyRelatedField(read_only=True)
     sesso_id = serializers.PrimaryKeyRelatedField(read_only=True)
     stato_donatore_id = serializers.PrimaryKeyRelatedField(read_only=True)
@@ -85,7 +85,7 @@ class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
                   )
 
 
-class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
+class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
     sezione_id = serializers.PrimaryKeyRelatedField(
         queryset=Sezione.objects.all(),
         source='sezione',
@@ -130,7 +130,7 @@ class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
                   )
 
     def __init__(self, *args, **kwargs):
-        super(DonatoreDetailSerializer, self).__init__(*args, **kwargs)
+        super(DonatoreSerializer, self).__init__(*args, **kwargs)
         request_user = self.context['request'].user
         self.fields['sezione_id'].queryset = Sezione.objects.filter(
             utente=request_user
