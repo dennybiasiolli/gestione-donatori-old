@@ -4,6 +4,7 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
 from .models import (
+    Donatore,
     Sesso,
     Sezione,
     StatoDonatore,
@@ -68,3 +69,72 @@ class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
         model = StatoDonatore
         fields = ('id', 'codice', 'descrizione', 'is_attivo',
                   'utente')
+
+
+class DonatoreSerializer(serializers.HyperlinkedModelSerializer):
+    sezione_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    sesso_id = serializers.PrimaryKeyRelatedField(read_only=True)
+    stato_donatore_id = serializers.PrimaryKeyRelatedField(read_only=True)
+
+    class Meta:
+        model = Donatore
+        fields = ('id', 'sezione_id',
+                  'num_tessera', 'cognome', 'nome',
+                  'sesso_id',
+                  'stato_donatore_id',
+                  )
+
+
+class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
+    sezione_id = serializers.PrimaryKeyRelatedField(
+        queryset=Sezione.objects.all(),
+        source='sezione',
+    )
+    sesso_id = serializers.PrimaryKeyRelatedField(
+        queryset=Sesso.objects.all(),
+        source='sesso',
+    )
+    stato_donatore_id = serializers.PrimaryKeyRelatedField(
+        queryset=StatoDonatore.objects.all(),
+        source='stato_donatore',
+    )
+
+    class Meta:
+        model = Donatore
+        fields = ('id', 'sezione_id',
+                  'num_tessera', 'cognome', 'nome',
+                  'sesso_id',
+                  'stato_donatore_id',
+                  'num_tessera_cartacea',
+                  'data_rilascio_tessera',
+                  'codice_fiscale',
+                  'data_nascita',
+                  'data_iscrizione',
+                  'gruppo_sanguigno',
+                  'rh',
+                  'fenotipo',
+                  'kell',
+                  'indirizzo',
+                  'frazione',
+                  'cap',
+                  'citta',
+                  'provincia',
+                  'tel',
+                  'tel_lavoro',
+                  'cell',
+                  'fax',
+                  'email',
+                  'fermo_per_malattia',
+                  'donazioni_pregresse',
+                  'num_benemerenze',
+                  )
+
+    def __init__(self, *args, **kwargs):
+        super(DonatoreDetailSerializer, self).__init__(*args, **kwargs)
+        request_user = self.context['request'].user
+        self.fields['sezione_id'].queryset = Sezione.objects.filter(
+            utente=request_user
+        )
+        self.fields['stato_donatore_id'].queryset = StatoDonatore.objects.filter(
+            Q(utente__isnull=True) | Q(utente=request_user)
+        )
