@@ -1,9 +1,11 @@
+from datetime import date
 from django.contrib.auth.models import User
 from django.test import TestCase
 from rest_framework.test import APIClient
 
 from donatori.models import (
     Donatore,
+    Donazione,
     Sesso,
     Sezione,
     StatoDonatore,
@@ -68,6 +70,17 @@ class MockedTestCase(TestCase):
             nome='Paolo',
             sesso=self.sesso_m,
             stato_donatore=self.stato_attivo,
+        )
+
+        self.donazione1 = Donazione.objects.create(
+            donatore=self.donatore1,
+            tipo_donazione=Donazione.SANGUE_INTERO,
+            data_donazione=date(2020, 10, 11),
+        )
+        self.donazione2 = Donazione.objects.create(
+            donatore=self.donatore2,
+            tipo_donazione=Donazione.PLASMA,
+            data_donazione=date(2020, 10, 11),
         )
 
     def authenticate(self, username, password):

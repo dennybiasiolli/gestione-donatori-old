@@ -5,6 +5,7 @@ from rest_framework.validators import UniqueTogetherValidator
 
 from .models import (
     Donatore,
+    Donazione,
     Sesso,
     Sezione,
     StatoDonatore,
@@ -71,10 +72,35 @@ class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
                   'utente')
 
 
+class DonazioneListSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Donazione
+        fields = ('id', 'tipo_donazione', 'data_donazione')
+
+
+class DonazioneSerializer(serializers.HyperlinkedModelSerializer):
+    donatore_id = serializers.PrimaryKeyRelatedField(
+        queryset=Donatore.objects.all(),
+        source='donatore',
+    )
+
+    class Meta:
+        model = Donazione
+        fields = ('id', 'donatore_id', 'tipo_donazione', 'data_donazione')
+
+    def __init__(self, *args, **kwargs):
+        super(DonazioneSerializer, self).__init__(*args, **kwargs)
+        request_user = self.context['request'].user
+        self.fields['donatore_id'].queryset = Donatore.objects.filter(
+            sezione__utente=request_user
+        )
+
+
 class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
     sezione = SezioneSerializer(read_only=True)
     sesso = SessoSerializer(read_only=True)
     stato_donatore = StatoDonatoreSerializer(read_only=True)
+    donazioni = DonazioneListSerializer(many=True, read_only=True)
 
     class Meta:
         model = Donatore
@@ -104,6 +130,7 @@ class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
                   'fermo_per_malattia',
                   'donazioni_pregresse',
                   'num_benemerenze',
+                  'donazioni',
                   )
 
 

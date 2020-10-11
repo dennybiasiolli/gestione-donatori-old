@@ -5,6 +5,7 @@ from rest_framework import mixins, permissions, viewsets, response
 
 from .models import (
     Donatore,
+    Donazione,
     Sesso,
     Sezione,
     StatoDonatore,
@@ -13,6 +14,7 @@ from .serializers import (
     DonatoreDetailSerializer,
     DonatoreListSerializer,
     DonatoreSerializer,
+    DonazioneSerializer,
     SessoDetailSerializer,
     SessoSerializer,
     SezioneSerializer,
@@ -93,3 +95,19 @@ class DonatoreViewSet(viewsets.ModelViewSet):
         elif self.action == 'retrieve':
             return DonatoreDetailSerializer
         return DonatoreSerializer
+
+
+class DonazioneViewSet(mixins.RetrieveModelMixin,
+                       mixins.CreateModelMixin,
+                       mixins.UpdateModelMixin,
+                       mixins.DestroyModelMixin,
+                       viewsets.GenericViewSet):
+    queryset = Donazione.objects.all().select_related(
+        'donatore', 'donatore__sezione')
+    serializer_class = DonazioneSerializer
+    permission_classes = (permissions.IsAuthenticated,)
+
+    def get_queryset(self):
+        return self.queryset.filter(
+            donatore__sezione__utente=self.request.user
+        )
