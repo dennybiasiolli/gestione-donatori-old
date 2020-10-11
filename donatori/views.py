@@ -10,6 +10,7 @@ from .models import (
     StatoDonatore,
 )
 from .serializers import (
+    DonatoreDetailSerializer,
     DonatoreListSerializer,
     DonatoreSerializer,
     SessoDetailSerializer,
@@ -89,4 +90,6 @@ class DonatoreViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.action == 'list':
             return DonatoreListSerializer
+        elif self.action == 'retrieve':
+            return DonatoreDetailSerializer
         return DonatoreSerializer
