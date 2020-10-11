@@ -71,6 +71,42 @@ class StatoDonatoreSerializer(serializers.HyperlinkedModelSerializer):
                   'utente')
 
 
+class DonatoreDetailSerializer(serializers.HyperlinkedModelSerializer):
+    sezione = SezioneSerializer(read_only=True)
+    sesso = SessoSerializer(read_only=True)
+    stato_donatore = StatoDonatoreSerializer(read_only=True)
+
+    class Meta:
+        model = Donatore
+        fields = ('id', 'sezione',
+                  'num_tessera', 'cognome', 'nome',
+                  'sesso',
+                  'stato_donatore',
+                  'num_tessera_cartacea',
+                  'data_rilascio_tessera',
+                  'codice_fiscale',
+                  'data_nascita',
+                  'data_iscrizione',
+                  'gruppo_sanguigno',
+                  'rh',
+                  'fenotipo',
+                  'kell',
+                  'indirizzo',
+                  'frazione',
+                  'cap',
+                  'citta',
+                  'provincia',
+                  'tel',
+                  'tel_lavoro',
+                  'cell',
+                  'fax',
+                  'email',
+                  'fermo_per_malattia',
+                  'donazioni_pregresse',
+                  'num_benemerenze',
+                  )
+
+
 class DonatoreListSerializer(serializers.HyperlinkedModelSerializer):
     sezione_id = serializers.PrimaryKeyRelatedField(read_only=True)
     sesso_id = serializers.PrimaryKeyRelatedField(read_only=True)
