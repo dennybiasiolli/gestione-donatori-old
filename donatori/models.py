@@ -130,10 +130,12 @@ class Donatore(models.Model):
 
 
 class Donazione(models.Model):
+    NON_SPECIFICATO = 0
     SANGUE_INTERO = 1
     PLASMA = 2
     PIASTRINE = 3
     TIPO_DONAZIONE_CHOICES = [
+        (NON_SPECIFICATO, 'Non specificato'),
         (SANGUE_INTERO, 'Sangue intero'),
         (PLASMA, 'Plasma'),
         (PIASTRINE, 'Piastrine'),
@@ -142,7 +144,7 @@ class Donazione(models.Model):
         Donatore, related_name='donazioni', on_delete=models.CASCADE)
     tipo_donazione = models.IntegerField(
         choices=TIPO_DONAZIONE_CHOICES,
-        default=SANGUE_INTERO,
+        default=NON_SPECIFICATO,
     )
     data_donazione = models.DateField(default=date.today)
 
