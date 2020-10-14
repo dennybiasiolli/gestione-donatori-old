@@ -57,9 +57,9 @@ class DonatoreAdmin(admin.ModelAdmin):
     inlines = (DonazioneInline,)
     list_select_related = ('sesso', 'stato_donatore')
     list_display = ('num_tessera', 'cognome', 'nome',
-                    'sesso', 'stato_donatore', 'sezione')
+                    'citta', 'sesso', 'stato_donatore')
     ordering = ('cognome', 'nome', 'num_tessera')
-    search_fields = ('cognome', 'nome', 'num_tessera')
+    search_fields = ('cognome', 'nome', 'citta', 'num_tessera')
 
 
 admin.site.unregister(User)
