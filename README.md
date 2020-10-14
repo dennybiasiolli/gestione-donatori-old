@@ -48,3 +48,18 @@ results with:
 ```
 coverage run manage.py test --settings=website.settings_test && coverage report -m && coverage html
 ```
+
+
+## Importing data from JSON created in old dotnet version
+
+```sh
+python manage.py donatori_import_from_dotnet -d mypath
+```
+
+where `mypath` is the directory containing
+
+- `sezioni.json`
+
+- `statiDonatori.json`
+
+- `donatori.json`
