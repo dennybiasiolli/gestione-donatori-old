@@ -1,5 +1,7 @@
+from datetime import date
 from django.contrib.auth.models import User
 
+from donatori.models import Donazione
 from .mocked_data import MockedTestCase
 
 
@@ -341,13 +343,37 @@ class DonatoreViewSetTestCase(MockedTestCase):
             '/api/donatori/{}/'.format(self.donatore1.id))
         self.assertEqual(response.status_code, 200)
         self.assertDictEqual(response.data, {
-            'sezione_id': self.sezione1.id,
             'id': 1,
+            'sezione': {
+                'id': self.sezione1.id,
+                'descrizione': self.sezione1.descrizione,
+                'ragione_sociale': self.sezione1.ragione_sociale,
+                'indirizzo': self.sezione1.indirizzo,
+                'frazione': self.sezione1.frazione,
+                'cap': self.sezione1.cap,
+                'citta': self.sezione1.citta,
+                'provincia': self.sezione1.provincia,
+                'tel': self.sezione1.tel,
+                'fax': self.sezione1.fax,
+                'email': self.sezione1.email,
+                'presidente': self.sezione1.presidente,
+                'segretario': self.sezione1.segretario,
+            },
             'num_tessera': '0001',
             'cognome': 'Rossi',
             'nome': 'Mario',
-            'sesso_id': self.sesso_m.id,
-            'stato_donatore_id': self.stato_attivo.id,
+            'sesso': {
+                'id': self.sesso_m.id,
+                'codice': self.sesso_m.codice,
+                'descrizione': self.sesso_m.descrizione,
+            },
+            'stato_donatore': {
+                'id': self.stato_attivo.id,
+                'codice': self.stato_attivo.codice,
+                'descrizione': self.stato_attivo.descrizione,
+                'is_attivo': self.stato_attivo.is_attivo,
+                'utente': self.stato_attivo.utente,
+            },
             'num_tessera_cartacea': '',
             'data_rilascio_tessera': None,
             'codice_fiscale': 'ABCDEF',
@@ -370,6 +396,11 @@ class DonatoreViewSetTestCase(MockedTestCase):
             'fermo_per_malattia': False,
             'donazioni_pregresse': 0,
             'num_benemerenze': 0,
+            'donazioni': [{
+                'id': self.donazione1.id,
+                'tipo_donazione': self.donazione1.tipo_donazione,
+                'data_donazione': self.donazione1.data_donazione.strftime('%Y-%m-%d'),
+            }],
         })
 
     def test_post_donatore(self):
@@ -479,4 +510,104 @@ class DonatoreViewSetTestCase(MockedTestCase):
         self.client.force_login(self.avis2)
         response = self.client.delete(
             '/api/donatori/{}/'.format(self.donatore1.id))
+        self.assertEqual(response.status_code, 204)
+
+
+class DonazioneViewSetTestCase(MockedTestCase):
+    def test_get_donazioni(self):
+        self.client.force_login(self.avis1)
+        response = self.client.get('/api/donazioni/')
+        self.assertEqual(response.status_code, 405)
+
+    def test_get_donazione(self):
+        self.client.force_login(self.avis1)
+        response = self.client.get(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.get(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
+        self.assertEqual(response.status_code, 200)
+        self.assertDictEqual(response.data, {
+            'id': self.donazione1.id,
+            'donatore_id': self.donazione1.donatore.id,
+            'tipo_donazione': self.donazione1.tipo_donazione,
+            'data_donazione': self.donazione1.data_donazione.strftime('%Y-%m-%d'),
+        })
+
+    def test_post_donazione(self):
+        self.client.force_login(self.avis1)
+        response = self.client.post('/api/donazioni/', {
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PLASMA,
+        })
+        self.assertEqual(response.status_code, 400)
+
+        self.client.force_login(self.avis2)
+        response = self.client.post('/api/donazioni/', {
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PLASMA,
+            'data_donazione': date(2020, 10, 1),
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertDictContainsSubset({
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PLASMA,
+            'data_donazione': date(2020, 10, 1).strftime('%Y-%m-%d'),
+        }, response.data)
+        response = self.client.post('/api/donazioni/', {
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PLASMA,
+            'data_donazione': date(2020, 10, 1),
+        })
+        self.assertEqual(response.status_code, 400)
+
+    def test_put_donazione(self):
+        self.client.force_login(self.avis1)
+        response = self.client.put(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.put(
+            '/api/donazioni/{}/'.format(self.donazione1.id), {
+                'donatore_id': self.donatore1.id,
+                'tipo_donazione': Donazione.PIASTRINE,
+                'data_donazione': date(2020, 10, 1),
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertDictContainsSubset({
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PIASTRINE,
+            'data_donazione': date(2020, 10, 1).strftime('%Y-%m-%d'),
+        }, response.data)
+
+    def test_patch_donazione(self):
+        self.client.force_login(self.avis1)
+        response = self.client.patch(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.patch(
+            '/api/donazioni/{}/'.format(self.donazione1.id), {
+                'tipo_donazione': Donazione.PLASMA,
+            })
+        self.assertEqual(response.status_code, 200)
+        self.assertDictContainsSubset({
+            'donatore_id': self.donatore1.id,
+            'tipo_donazione': Donazione.PLASMA,
+            'data_donazione': date(2020, 10, 11).strftime('%Y-%m-%d'),
+        }, response.data)
+
+    def test_delete_donazione(self):
+        self.client.force_login(self.avis1)
+        response = self.client.delete(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
+        self.assertEqual(response.status_code, 404)
+
+        self.client.force_login(self.avis2)
+        response = self.client.delete(
+            '/api/donazioni/{}/'.format(self.donazione1.id))
         self.assertEqual(response.status_code, 204)

@@ -6,6 +6,7 @@ from django.utils.html import format_html
 
 from .models import (
     Donatore,
+    Donazione,
     ProfiloUtente,
     Sesso,
     Sezione,
@@ -46,9 +47,24 @@ class CustomUserAdmin(UserAdmin):
                     'sezione',)
 
 
+class DonazioneInline(admin.TabularInline):
+    model = Donazione
+    extra = 0
+
+
+class DonatoreAdmin(admin.ModelAdmin):
+    model = Donatore
+    inlines = (DonazioneInline,)
+    list_select_related = ('sesso', 'stato_donatore')
+    list_display = ('num_tessera', 'cognome', 'nome',
+                    'citta', 'sesso', 'stato_donatore')
+    ordering = ('cognome', 'nome', 'num_tessera')
+    search_fields = ('cognome', 'nome', 'citta', 'num_tessera')
+
+
 admin.site.unregister(User)
 admin.site.register(User, CustomUserAdmin)
 admin.site.register(Sezione)
 admin.site.register(Sesso)
 admin.site.register(StatoDonatore)
-admin.site.register(Donatore)
+admin.site.register(Donatore, DonatoreAdmin)
