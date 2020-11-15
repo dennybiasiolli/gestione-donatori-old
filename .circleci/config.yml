@@ -1,0 +1,55 @@
+version: 2.1
+
+orbs:
+  python: circleci/python@0.2.1
+  codecov: codecov/codecov@1.0.2
+
+jobs:
+  build-and-test:
+    working_directory: ~/repo
+
+    docker:
+      - image: circleci/python:3.8
+        auth:
+          username: $DOCKERHUB_USERNAME
+          password: $DOCKERHUB_PASSWORD
+
+    steps:
+      - checkout
+
+      - restore_cache:  # ensure this step occurs *before* installing dependencies
+          key: deps9-{{ .Branch }}-{{ checksum "requirements_dev.txt" }}
+
+      - run:
+          name: install dependencies
+          command: |
+            python3 -m venv venv
+            . venv/bin/activate
+            pip install --upgrade pip
+            pip install -r requirements_dev.txt
+
+      - save_cache:
+          key: deps9-{{ .Branch }}-{{ checksum "requirements_dev.txt" }}
+          paths:
+            - "./venv"
+
+      - run:
+          name: run tests
+          command: |
+            . venv/bin/activate
+            cp website/settings_test.py website/settings.py
+            coverage run manage.py test
+            coverage report -m
+            coverage html
+            coverage xml
+
+      - store_artifacts:
+          path: htmlcov
+
+      - codecov/upload:
+          file: coverage.xml
+
+workflows:
+  main:
+    jobs:
+      - build-and-test
