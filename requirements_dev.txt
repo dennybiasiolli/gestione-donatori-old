@@ -1,5 +1,5 @@
 -r requirements.txt
 autopep8==1.5.4
 coverage==5.3
-pylint==2.6.0
+pylint==2.7.0
 pylint-django==2.3.0
