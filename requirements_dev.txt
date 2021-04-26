@@ -2,4 +2,4 @@
 autopep8==1.5.7
 coverage==5.5
 pylint==2.8.3
-pylint-django==2.4.3
+pylint-django==2.4.4
