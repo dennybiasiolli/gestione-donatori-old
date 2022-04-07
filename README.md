@@ -1,7 +1,5 @@
 # Gestione Donatori - API Server
 
-[![Updates](https://pyup.io/repos/github/dennybiasiolli/gestione-donatori/shield.svg)](https://pyup.io/repos/github/dennybiasiolli/gestione-donatori/) [![Python 3](https://pyup.io/repos/github/dennybiasiolli/gestione-donatori/python-3-shield.svg)](https://pyup.io/repos/github/dennybiasiolli/gestione-donatori/)
-
 
 ## Initializing project
 
